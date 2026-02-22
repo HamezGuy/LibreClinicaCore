@@ -28,8 +28,8 @@ services:
   db:
     image: docker.io/library/postgres:14-alpine
     environment:
-      POSTGRES_PASSWORD: clinica
-      POSTGRES_USER: clinica
+      POSTGRES_PASSWORD: password
+      POSTGRES_USER: postgres
       POSTGRES_DB: libreclinica
 
   smtp:
