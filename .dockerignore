@@ -3,6 +3,7 @@
 
 # include config files
 !/docker/config
+!/docker/entrypoint.sh
 
 # include maven file
 !/pom.xml
