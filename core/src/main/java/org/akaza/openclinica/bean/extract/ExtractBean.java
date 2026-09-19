@@ -2017,6 +2017,9 @@ public class ExtractBean {
      *            The dataset to set.
      */
     public void setDataset(DatasetBean dataset) {
+        if (dataset != null) {
+            dataset.requireLegacyExtraction();
+        }
         this.dataset = dataset;
     }
 

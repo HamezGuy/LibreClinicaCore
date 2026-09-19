@@ -554,6 +554,7 @@ public class GenerateExtractFileService {
     }
 
     public ExtractBean generateExtractBean(DatasetBean dsetBean, StudyBean currentStudy, StudyBean parentStudy) {
+        dsetBean.requireLegacyExtraction();
         ExtractBean eb = new ExtractBean(ds);
         eb.setDataset(dsetBean);
         eb.setShowUniqueId(CoreResources.getField("show_unique_id"));

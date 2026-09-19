@@ -6,6 +6,7 @@ COPY . .
 
 RUN --mount=type=cache,target=/root/.m2 \
     set -eux; \
+    install -d /root/.m2/repository; \
     find /root/.m2/repository -type f -size 0 -delete; \
     xml_api_jar=/root/.m2/repository/xml-apis/xml-apis-ext/1.3.04/xml-apis-ext-1.3.04.jar; \
     install -d "$(dirname "$xml_api_jar")"; \

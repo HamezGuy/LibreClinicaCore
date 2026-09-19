@@ -141,7 +141,7 @@ public class ViewDatasetsServlet extends SecureController {
                 FormProcessor fp = new FormProcessor(request);
                 int datasetId = fp.getInt("datasetId");
 
-                DatasetBean db = initializeAttributes(datasetId);
+                DatasetBean db = (DatasetBean) dsdao.findByPK(datasetId);
                 StudyDAO sdao = new StudyDAO(sm.getDataSource());
                 StudyBean study = (StudyBean)sdao.findByPK(db.getStudyId());
 
@@ -151,6 +151,12 @@ public class ViewDatasetsServlet extends SecureController {
                     forwardPage(Page.MENU_SERVLET);
                     return;
                 }
+                if (db.isNativeExportReceipt()) {
+                    checkRoleByUserAndStudy(ub, study.getParentStudyId(), study.getId());
+                    NativeDatasetReview.redirect(db, response);
+                    return;
+                }
+                db = initializeAttributes(datasetId);
 
                 /*
                  * EntityBeanTable table = fp.getEntityBeanTable(); ArrayList

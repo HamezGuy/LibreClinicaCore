@@ -12,10 +12,12 @@ package org.akaza.openclinica.control.extract;
 import org.akaza.openclinica.bean.core.Role;
 import org.akaza.openclinica.bean.extract.ArchivedDatasetFileBean;
 import org.akaza.openclinica.bean.extract.DatasetBean;
+import org.akaza.openclinica.bean.managestudy.StudyBean;
 import org.akaza.openclinica.control.core.SecureController;
 import org.akaza.openclinica.control.form.FormProcessor;
 import org.akaza.openclinica.dao.extract.ArchivedDatasetFileDAO;
 import org.akaza.openclinica.dao.extract.DatasetDAO;
+import org.akaza.openclinica.dao.managestudy.StudyDAO;
 import org.akaza.openclinica.i18n.core.LocaleResolver;
 import org.akaza.openclinica.view.Page;
 import org.akaza.openclinica.web.InsufficientPermissionException;
@@ -58,6 +60,22 @@ public class ShowFileServlet extends SecureController {
 
         ArchivedDatasetFileDAO asdfdao = new ArchivedDatasetFileDAO(sm.getDataSource());
         ArchivedDatasetFileBean asdfBean = (ArchivedDatasetFileBean) asdfdao.findByPK(fileId);
+
+        if (db.isNativeExportReceipt()) {
+            StudyDAO studyDao = new StudyDAO(sm.getDataSource());
+            StudyBean ownerStudy = (StudyBean) studyDao.findByPK(db.getStudyId());
+            checkRoleByUserAndStudy(ub, ownerStudy.getParentStudyId(), ownerStudy.getId());
+            if (ownerStudy.getId() != currentStudy.getId() && ownerStudy.getParentStudyId() != currentStudy.getId()) {
+                throw new InsufficientPermissionException(Page.MENU_SERVLET,
+                        resexception.getString("not_allowed_access_extract_data_servlet"), "1");
+            }
+            if (asdfBean.getId() <= 0 || asdfBean.getDatasetId() != db.getId()) {
+                response.sendError(404, "The archived record does not belong to this native dataset.");
+                return;
+            }
+            NativeDatasetReview.redirect(db, response);
+            return;
+        }
 
         ArrayList<ArchivedDatasetFileBean> newFileList = new ArrayList<>();
         newFileList.add(asdfBean);
