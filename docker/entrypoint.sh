@@ -27,6 +27,7 @@ set_property filePath "${filePath:-/usr/local/tomcat/libreclinica.data/}"
 set_property userAccountNotification "${userAccountNotification:-email}"
 set_property adminEmail "${adminEmail:-admin@example.com}"
 set_property sysURL "${sysURL:-http://localhost:8080/libreclinica/MainMenu}"
+set_property edcExportUiBaseUrl "${edcExportUiBaseUrl:-}"
 
 if [ -n "${supportURL:-}" ]; then
     set_property supportURL "$supportURL"

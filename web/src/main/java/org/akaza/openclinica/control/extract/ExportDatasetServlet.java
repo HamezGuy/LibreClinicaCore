@@ -126,6 +126,9 @@ public class ExportDatasetServlet extends SecureController {
             forwardPage(Page.MENU_SERVLET);
             return;
         }
+        if (NativeDatasetReview.redirect(db, response)) {
+            return;
+        }
         /**
          * @vbc 08/06/2008 NEW EXTRACT DATA IMPLEMENTATION get study_id and
          *      parentstudy_id int currentstudyid = currentStudy.getId(); int

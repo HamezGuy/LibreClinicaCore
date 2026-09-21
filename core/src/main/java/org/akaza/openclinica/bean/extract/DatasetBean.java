@@ -166,7 +166,16 @@ public class DatasetBean extends AuditableEntityBean {
      * @return Returns the sQLStatement.
      */
     public String getSQLStatement() {
+        requireLegacyExtraction();
         return SQLStatement;
+    }
+
+    public boolean isNativeExportReceipt() {
+        return NativeExportReceipt.isReceipt(SQLStatement);
+    }
+
+    public void requireLegacyExtraction() {
+        NativeExportReceipt.requireLegacyExtraction(SQLStatement);
     }
 
     /**
@@ -174,6 +183,11 @@ public class DatasetBean extends AuditableEntityBean {
      *            The sQLStatement to set.
      */
     public void setSQLStatement(String statement) {
+        // A dataset already held in a legacy edit session must not lose its
+        // native receipt before the extraction/persistence guards see it.
+        if (isNativeExportReceipt() && !SQLStatement.equals(statement)) {
+            requireLegacyExtraction();
+        }
         SQLStatement = statement;
     }
 
@@ -245,6 +259,7 @@ public class DatasetBean extends AuditableEntityBean {
      * @return string in SQL, to elicit information.
      */
     public String generateQuery() {
+        requireLegacyExtraction();
         StringBuffer sb = new StringBuffer();
         sb.append("select distinct * from " + VIEW_NAME + " where ");
 
@@ -583,6 +598,7 @@ public class DatasetBean extends AuditableEntityBean {
     }
 
     public String sqlWithUniqeItemIds(String itemIdStr) {
+        requireLegacyExtraction();
         String sql = "";
         String[] s1 = this.SQLStatement.split("item_id in");
         sql += s1[0] + itemIdStr + s1[1].substring(s1[1].indexOf(")"));

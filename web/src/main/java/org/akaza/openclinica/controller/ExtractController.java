@@ -10,6 +10,7 @@
 package org.akaza.openclinica.controller;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -54,8 +55,6 @@ public class ExtractController {
     @Qualifier("dataSource")
     private BasicDataSource dataSource;
 
-    private DatasetDAO datasetDao;
-
     @Autowired
     private Scheduler scheduler;
 
@@ -64,6 +63,10 @@ public class ExtractController {
 
     public ExtractController() {
 
+    }
+
+    protected DatasetBean findDataset(int datasetId) {
+        return (DatasetBean) new DatasetDAO(dataSource).findByPK(datasetId);
     }
 
     /**
@@ -75,13 +78,24 @@ public class ExtractController {
      */
     @RequestMapping(method = RequestMethod.GET)
     public ModelMap processSubmit(@RequestParam("id") String id,
-                                  @RequestParam("datasetId") String datasetId, HttpServletRequest request, HttpServletResponse response) {
+                                  @RequestParam("datasetId") String datasetId, HttpServletRequest request, HttpServletResponse response) throws IOException {
         if(!mayProceed(request)) {
             try {
                 response.sendRedirect(request.getContextPath() + "/MainMenu?message=authentication_failed");
             } catch (Exception e) {
                 logger.error("Error in redirecting the response: ", e);
             }
+            return null;
+        }
+
+        DatasetBean dsBean = findDataset(Integer.parseInt(datasetId));
+        if (dsBean.isNativeExportReceipt()) {
+            // The existing servlet verifies the live dataset/study scope and
+            // then opens the configured EDC review. Do this before preparing
+            // any legacy extract properties, files or scheduled jobs.
+            response.setHeader("Cache-Control", "no-store");
+            response.setHeader("Referrer-Policy", "no-referrer");
+            response.sendRedirect(request.getContextPath() + "/ExportDataset?datasetId=" + dsBean.getId());
             return null;
         }
 
@@ -94,13 +108,11 @@ public class ExtractController {
         // get extract id
         // get dataset id
         // if id is a number and dataset id is a number ...
-        datasetDao = new DatasetDAO(dataSource);
         UserAccountBean userBean = (UserAccountBean) request.getSession().getAttribute("userBean");
         CoreResources cr =  new CoreResources();
 
         ExtractPropertyBean epBean = cr.findExtractPropertyBeanById(new Integer(id).intValue(),datasetId);
 
-        DatasetBean dsBean = (DatasetBean)datasetDao.findByPK(new Integer(datasetId).intValue());
         // set the job in motion
         String[] files = epBean.getFileName();
         String exportFileName;

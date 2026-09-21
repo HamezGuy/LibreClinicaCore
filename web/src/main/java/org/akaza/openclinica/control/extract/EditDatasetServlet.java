@@ -52,7 +52,8 @@ public class EditDatasetServlet extends SecureController {
         FormProcessor fp = new FormProcessor(request);
 
         int dsId = fp.getInt("dsId");
-        DatasetBean dataset = initializeAttributes(dsId);
+        DatasetDAO datasetDao = new DatasetDAO(sm.getDataSource());
+        DatasetBean dataset = (DatasetBean) datasetDao.findByPK(dsId);
 
         StudyDAO sdao = new StudyDAO(sm.getDataSource());
         StudyBean study = (StudyBean)sdao.findByPK(dataset.getStudyId());
@@ -73,6 +74,10 @@ public class EditDatasetServlet extends SecureController {
             forwardPage(Page.MENU_SERVLET);
             return;
         }
+        if (NativeDatasetReview.redirect(dataset, response)) {
+            return;
+        }
+        dataset = initializeAttributes(dsId);
 
         @SuppressWarnings("unchecked")
 		LinkedHashMap<StudyEventDefinitionBean, ArrayList<CRFBean>> events = 
