@@ -31,8 +31,17 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_USER: postgres
       POSTGRES_DB: libreclinica
+    # A named volume: the image declares its data directory a VOLUME, and
+    # without a name every `up` after a `down` made a new anonymous volume and
+    # left the previous one dangling on the Docker disk. The development
+    # database now survives `down`; `docker compose down -v` resets it.
+    volumes:
+      - db-data:/var/lib/postgresql/data
 
   smtp:
     image: docker.io/marlonb/mailcrab:v1.1.0
     ports:
       - "127.0.0.1:1080:1080"
+
+volumes:
+  db-data:
