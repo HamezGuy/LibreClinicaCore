@@ -27,6 +27,16 @@ docker compose up --build --watch
 
 When the container has been started, LibreClinica will be available at <http://localhost:8080>.
 
+## Data
+
+The database, LibreClinica's file store and its logs live in three named volumes (`db-data`, `libreclinica-data`, `libreclinica-logs`), so they survive `docker compose down` together and `down` leaves no anonymous volume behind. To start from an empty instance, reset all three at once:
+
+```sh
+docker compose down -v
+```
+
+`node --test docker/compose-volume-coverage.test.mjs` checks that every `VOLUME` an image declares is covered by a named volume, a bind mount or a tmpfs in `compose.yaml` (it needs the Docker CLI with the compose plugin).
+
 ## Emails
 
 LibreClinica is configured so that it does not actually send emails to the recipients. Instead, the emails are accessible at <http://localhost:1080>.

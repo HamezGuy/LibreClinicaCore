@@ -5,6 +5,15 @@ services:
       - "127.0.0.1:8080:8080"
     depends_on:
       - db
+    # The image declares LibreClinica's file store and Tomcat's logs VOLUMEs.
+    # Unnamed, every `docker compose down` left both behind as anonymous
+    # volumes on the Docker disk and the next `up` started an empty file store
+    # while the named database still pointed into the old one. Named, they
+    # survive `down` together with the database; `docker compose down -v`
+    # resets all three.
+    volumes:
+      - libreclinica-data:/usr/local/tomcat/libreclinica.data
+      - libreclinica-logs:/usr/local/tomcat/logs
     develop:
       watch:
         # restart on config file changes
@@ -45,3 +54,5 @@ services:
 
 volumes:
   db-data:
+  libreclinica-data:
+  libreclinica-logs:
