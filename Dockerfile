@@ -1,4 +1,6 @@
-FROM docker.io/library/maven:3-eclipse-temurin-8 AS builder
+# JAXB 2.2.11 depends on dependency-POM file activation removed in Maven 3.10.
+# Keep the Java 8 builder on the compatible Maven 3.9 toolchain.
+FROM docker.io/library/maven:3.9.12-eclipse-temurin-8 AS builder
 
 WORKDIR /app
 
