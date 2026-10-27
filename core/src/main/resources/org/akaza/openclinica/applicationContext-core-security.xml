@@ -27,9 +27,16 @@
     	<constructor-arg value="MD5"/>
     </bean>
 
+    <!-- Accepted, never produced here: the AccuraTrial API writes user_account.passwd with bcrypt now, where it
+         used to write an unsalted MD5 of the real password purely so its accounts could sign in here. This lets
+         those accounts sign in without that copy existing. Additive: SHA-1 and MD5 are still accepted, and this
+         application still writes SHA-1. -->
+    <bean id="bcryptPasswordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"/>
+
     <bean id="openClinicaPasswordEncoder" class="org.akaza.openclinica.core.OpenClinicaPasswordEncoder">
         <property name="currentPasswordEncoder" ref="shaPasswordEncoder"/>
         <property name="oldPasswordEncoder" ref="md5PasswordEncoder"/>
+        <property name="bcryptPasswordEncoder" ref="bcryptPasswordEncoder"/>
     </bean>
 
     <bean id="securityManager" class="org.akaza.openclinica.core.SecurityManager">
