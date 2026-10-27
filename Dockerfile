@@ -25,6 +25,31 @@ RUN --mount=type=cache,target=/root/.m2 \
     cp ws/target/LibreClinica-ws*.war /LibreClinica-ws.war;
 
 ############################################################
+# Compile and run the Java tests. This is where the Java half of a change gets
+# checked, because no JDK and no Maven are installed on the development machines
+# here: the only toolchain that exists is the builder image above.
+#
+#   docker build --target tests .
+#
+# It is NOT part of the image. The runtime stage below never refers to this
+# stage, and BuildKit builds only the stages its target depends on, so a plain
+# `docker build .` still produces exactly the image it produced before and does
+# not run a test.
+#
+# Tests are skipped by default by the skipTests property in pom.xml, so this has
+# to turn them on. The excludes that keep the database-backed tests out of the
+# run, and the reason they are out, are in the surefire configuration in
+# pom.xml; read that before concluding a test is missing.
+FROM builder AS tests
+
+# The builder stage has already run in this same build, so the Maven repository
+# in the shared cache mount is primed and the xml-apis-ext jar that has to be
+# fetched by hand is in place. The builder also compiled the test sources
+# (-DskipTests skips running tests, not compiling them), so this recompiles
+# nothing and only runs them.
+RUN --mount=type=cache,target=/root/.m2     set -eux;     mvn --batch-mode test -DskipTests=false
+
+############################################################
 FROM tomcat:9-jdk11
 
 # `postgresql-client` is here for pg_isready only (see the wait-for-db script
