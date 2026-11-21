@@ -77,6 +77,11 @@ COPY \
     /docker/config/ \
     /usr/local/tomcat/libreclinica.config/
 
+# CoreResources resolves datainfo.properties by webapp name. Both contexts use
+# the same study database. Leave their other config files context-specific.
+RUN mkdir -p /usr/local/tomcat/libreclinica-ws.config \
+    && ln -s ../libreclinica.config/datainfo.properties /usr/local/tomcat/libreclinica-ws.config/datainfo.properties
+
 COPY docker/entrypoint.sh /usr/local/bin/libreclinica-entrypoint
 RUN sed -i 's/\r$//' /usr/local/bin/libreclinica-entrypoint \
     && chmod +x /usr/local/bin/libreclinica-entrypoint
