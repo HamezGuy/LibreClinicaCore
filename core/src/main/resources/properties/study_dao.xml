@@ -1,12 +1,27 @@
 <?xml version="1.0"?>
 <queries>
+    <projection>
+        <name>study</name>
+        <columns>
+            study_id, parent_study_id, unique_identifier, secondary_identifier, name, summary, date_planned_start,
+            date_planned_end, date_created, date_updated, owner_id, update_id, type_id, status_id,
+            principal_investigator, facility_name, facility_city, facility_state, facility_zip, facility_country,
+            facility_recruitment_status, facility_contact_name, facility_contact_degree, facility_contact_phone,
+            facility_contact_email, protocol_type, protocol_description, protocol_date_verification,
+            phase, expected_total_enrollment, sponsor, collaborators, medline_identifier, url, url_description,
+            conditions, keywords, eligibility, gender, age_max, age_min, healthy_volunteer_accepted,
+            purpose, allocation, masking, control, assignment, endpoint, interventions, duration,
+            selection, timing, official_title, results_reference, oc_oid, old_status_id, mail_notification,
+            contact_email
+        </columns>
+    </projection>
 	<query>
 		<name>findByPK</name>
-		<sql>SELECT * FROM STUDY WHERE STUDY_ID = ?</sql>
+		<sql>SELECT @native(study) FROM STUDY WHERE STUDY_ID = ?</sql>
 	</query>
 	<query>
 		<name>findByName</name>
-		<sql>SELECT * FROM STUDY WHERE NAME = ?</sql>
+		<sql>SELECT @native(study) FROM STUDY WHERE NAME = ?</sql>
 	</query>
     <query>
 		<name>getStudyIdsByCRF</name>
@@ -18,33 +33,33 @@
 	</query>
 	<query>
 		<name>findAll</name>
-		<sql>SELECT * FROM STUDY order by name</sql>
+		<sql>SELECT @native(study) FROM STUDY order by name</sql>
 	</query>
 	<query>
         <name>findAllByStudyId</name>
-        <sql>SELECT * FROM STUDY where (study_id =? or parent_study_id =?) and parent_study_id is not null order by name</sql>
+        <sql>SELECT @native(study) FROM STUDY where (study_id =? or parent_study_id =?) and parent_study_id is not null order by name</sql>
     </query>
 	<query>
 		<name>findAllByStatus</name>
-		<sql>SELECT * FROM STUDY where status_id=?</sql>
+		<sql>SELECT @native(study) FROM STUDY where status_id=?</sql>
 	</query>
 	<query>
 		<name>findAllParents</name>
-		<sql>SELECT * FROM STUDY WHERE parent_study_id is null order by name</sql>
+		<sql>SELECT @native(study) FROM STUDY WHERE parent_study_id is null order by name</sql>
 	</query>
 	<query>
 		<name>findAllByParent</name>
-		<sql>SELECT * FROM STUDY WHERE parent_study_id=? order by name</sql>
+		<sql>SELECT @native(study) FROM STUDY WHERE parent_study_id=? order by name</sql>
 	</query>
 	<query>
 		<name>findAllByParentLimit5</name>
-		<sql>SELECT * FROM STUDY WHERE parent_study_id=? order by name
+		<sql>SELECT @native(study) FROM STUDY WHERE parent_study_id=? order by name
 		    limit 5
 		</sql>
 	</query>
 	<query>
 		<name>findAllByUser</name>
-		<sql>SELECT s.* FROM study s, study_user_role sur
+		<sql>SELECT @native(study s) FROM study s, study_user_role sur
            WHERE sur.user_name = ?
            AND s.study_id=sur.study_id
          </sql>
@@ -52,7 +67,7 @@
 	<!-- YW 10-18-2007 find studies belonging to a user whose study user role status is not removed or auto-removed -->
 	<query>
 		<name>findAllByUserNotRemoved</name>
-		<sql>SELECT s.* FROM study s, study_user_role sur
+		<sql>SELECT @native(study s) FROM study s, study_user_role sur
            WHERE sur.user_name = ?
            AND s.study_id=sur.study_id
            AND sur.status_id != 5
@@ -62,19 +77,19 @@
 	<!-- tbh 04/2008 -->
 	<query>
 		<name>findByOid</name>
-		<sql>SELECT s.* FROM study s
+		<sql>SELECT @native(study s) FROM study s
            WHERE s.OC_OID = ?
          </sql>
 	</query>
 	<query>
         <name>findByUniqueIdentifier</name>
-        <sql>SELECT s.* FROM study s
+        <sql>SELECT @native(study s) FROM study s
            WHERE s.unique_identifier = ?
          </sql>
     </query>
     <query>
         <name>findSiteByUniqueIdentifier</name>
-        <sql>select site.* from study site, study study where
+        <sql>select @native(study site) from study site, study study where
                 site.parent_study_id = study.study_id and
                 study.unique_identifier = ? and   
                 site.unique_identifier = ?
@@ -150,12 +165,12 @@
 	</query>
 	<query>
 		<name>findByStudySubjectId</name>
-		<sql>select s.* from study_subject ss, study s
+		<sql>select @native(study s) from study_subject ss, study s
 		where ss.study_subject_id = ? and ss.study_id = s.study_id
       </sql>
 	</query>
 	<query>
 		<name>findAllByParentStudyIdOrderedByIdAsc</name>
-		<sql>SELECT * FROM STUDY WHERE study_id=? or parent_study_id=? order by study_id asc</sql>
+		<sql>SELECT @native(study) FROM STUDY WHERE study_id=? or parent_study_id=? order by study_id asc</sql>
 	</query>
 </queries>

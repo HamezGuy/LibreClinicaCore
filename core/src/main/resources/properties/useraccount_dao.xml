@@ -1,20 +1,36 @@
 <?xml version="1.0"?>
 <queries>
+    <projection>
+        <name>user_account</name>
+        <columns>
+            user_id, user_name, passwd, first_name, last_name, email, active_study, institutional_affiliation,
+            status_id, owner_id, date_created, date_updated, date_lastvisit, passwd_timestamp, passwd_challenge_question,
+            passwd_challenge_answer, phone, user_type_id, update_id, enabled, account_non_locked,
+            lock_counter, run_webservices, access_code, time_zone, enable_api_key, api_key, authtype,
+            authsecret
+        </columns>
+    </projection>
+    <projection>
+        <name>study_user_role</name>
+        <columns>
+            role_name, study_id, status_id, owner_id, date_created, date_updated, update_id, user_name
+        </columns>
+    </projection>
     <query>
         <name>findByPK</name>
-        <sql>SELECT * FROM USER_ACCOUNT WHERE USER_ID = ?</sql>
+        <sql>SELECT @native(user_account) FROM USER_ACCOUNT WHERE USER_ID = ?</sql>
     </query>
     <query>
         <name>findAll</name>
-        <sql>SELECT * FROM USER_ACCOUNT WHERE USER_NAME NOT LIKE '%.SS_%'</sql>
+        <sql>SELECT @native(user_account) FROM USER_ACCOUNT WHERE USER_NAME NOT LIKE '%.SS_%'</sql>
     </query>
     <query>
         <name>findAllByLimit</name>
-        <sql>SELECT * FROM USER_ACCOUNT WHERE USER_NAME NOT LIKE '%.SS_%' limit 5</sql>
+        <sql>SELECT @native(user_account) FROM USER_ACCOUNT WHERE USER_NAME NOT LIKE '%.SS_%' limit 5</sql>
     </query>
     <query>
         <name>findAllAvailable</name>
-        <sql>SELECT * FROM USER_ACCOUNT WHERE STATUS_ID=1 AND USER_NAME NOT LIKE '%.SS_%'</sql>
+        <sql>SELECT @native(user_account) FROM USER_ACCOUNT WHERE STATUS_ID=1 AND USER_NAME NOT LIKE '%.SS_%'</sql>
     </query>
     <query>
         <name>insert</name>
@@ -33,7 +49,7 @@
     </query>
     <query>
         <name>findStudyUserRole</name>
-        <sql>select * from study_user_role where role_name=? and study_id=? and status_id=? and user_name=?
+        <sql>select @native(study_user_role) from study_user_role where role_name=? and study_id=? and status_id=? and user_name=?
         </sql>
     </query>
     <query>
@@ -84,23 +100,23 @@
     </query>
     <query>
         <name>findByUserName</name>
-        <sql>select * from user_account where user_name=?</sql>
+        <sql>select @native(user_account) from user_account where user_name=?</sql>
     </query>
     <query>
         <name>findByAccessCode</name>
-        <sql>select * from user_account where access_code=?</sql>
+        <sql>select @native(user_account) from user_account where access_code=?</sql>
     </query>
     <query>
         <name>findByApiKey</name>
-        <sql>select * from user_account where api_key=?</sql>
+        <sql>select @native(user_account) from user_account where api_key=?</sql>
     </query>
     <query>
         <name>findAllParticipantsByStudyOid</name>
-        <sql>select * from user_account where access_code != 'null' and access_code !='' and user_name like ? </sql>
+        <sql>select @native(user_account) from user_account where access_code != 'null' and access_code !='' and user_name like ? </sql>
     </query>
     <query>
         <name>findAllRolesByUserName</name>
-        <sql>select * from study_user_role where user_name=?</sql>
+        <sql>select @native(study_user_role) from study_user_role where user_name=?</sql>
     </query>
     <query>
         <name>findRole</name>
@@ -166,7 +182,7 @@
     </query>
     <query>
         <name>findAllByStudyId</name>
-        <sql>SELECT sur.* FROM study_user_role sur, study st
+        <sql>SELECT @native(study_user_role sur) FROM study_user_role sur, study st
             WHERE sur.study_id=st.study_id
             AND (st.study_id=? or st.parent_study_id=?)
             order by sur.date_updated desc
@@ -174,7 +190,7 @@
     </query>
     <query>
         <name>findAllByStudyIdAndLimit</name>
-        <sql>SELECT sur.* FROM study_user_role sur, study st
+        <sql>SELECT @native(study_user_role sur) FROM study_user_role sur, study st
             WHERE sur.study_id=st.study_id
             AND (st.study_id=? or st.parent_study_id=?)
             order by sur.date_updated desc limit 5
@@ -269,7 +285,7 @@
     <query>
         <name>findAllByRole</name>
         <sql>
-            SELECT DISTINCT ON (uc.user_name) uc.*
+            SELECT DISTINCT ON (uc.user_name) @native(user_account uc)
             FROM study_user_role sur, user_account uc
             WHERE
             sur.user_name=uc.user_name AND
