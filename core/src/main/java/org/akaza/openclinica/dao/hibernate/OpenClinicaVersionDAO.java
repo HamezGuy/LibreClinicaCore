@@ -10,6 +10,7 @@
 package org.akaza.openclinica.dao.hibernate;
 
 import java.sql.Timestamp;
+import java.util.Objects;
 
 import org.akaza.openclinica.domain.OpenClinicaVersionBean;
 import org.hibernate.query.Query;
@@ -20,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
  */
 public class OpenClinicaVersionDAO extends AbstractDomainDao<OpenClinicaVersionBean> {
 
-    private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(this.getClass().getName());
     @Override
     public Class<OpenClinicaVersionBean> domainClass() {
         return OpenClinicaVersionBean.class;
@@ -28,31 +28,24 @@ public class OpenClinicaVersionDAO extends AbstractDomainDao<OpenClinicaVersionB
 
     @Transactional
     public OpenClinicaVersionBean findDefault() {
-        String query = "from " + getDomainClassName() + " ocVersion";
+        String query = "from " + getDomainClassName() + " ocVersion order by ocVersion.id desc";
         Query<OpenClinicaVersionBean> q = getCurrentSession().createQuery(query, OpenClinicaVersionBean.class);
-        return q.uniqueResult();
+        return q.setMaxResults(1).uniqueResult();
     }
 
     @Transactional
-    public void saveOCVersionToDB(String OpenClinicaVersion) {
-        logger.debug("OpenClinicaVersionDAO -> saveOCVersionToDB");
-        logger.debug("OpenClinicaVersion: " + OpenClinicaVersion);
-        // Delete the previous entry if exists in the database
-        deleteDefault();
-        // Insert new entry
-        Timestamp currentTimestamp = new Timestamp(new java.util.Date().getTime());
-        OpenClinicaVersionBean openClinicaVersionBean = new OpenClinicaVersionBean();
-        openClinicaVersionBean.setName(OpenClinicaVersion);
-        openClinicaVersionBean.setUpdate_timestamp(currentTimestamp);
-        saveOrUpdate(openClinicaVersionBean);
+    public void saveOCVersionToDB(String version) {
+        // Serialize startup writers, including the first writer when there is no row to lock.
+        getCurrentSession().createNativeQuery("LOCK TABLE openclinica_version IN EXCLUSIVE MODE").executeUpdate();
+        OpenClinicaVersionBean current = findDefault();
+        if (current != null && Objects.equals(current.getName(), version)) {
+            return;
+        }
 
-    }
-
-    @Transactional
-    public int deleteDefault() {
-        String query = "delete from " + getDomainClassName() + " ocVersion";
-        Query<?> q = getCurrentSession().createQuery(query);
-        return q.executeUpdate();
+        OpenClinicaVersionBean next = new OpenClinicaVersionBean();
+        next.setName(version);
+        next.setUpdate_timestamp(new Timestamp(System.currentTimeMillis()));
+        saveOrUpdate(next);
     }
 
 }
