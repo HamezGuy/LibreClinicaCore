@@ -99,7 +99,8 @@ public class DataEndpoint {
      * @throws Exception
      */
     @PayloadRoot(localPart = "importRequest", namespace = NAMESPACE_URI_V1)
-    public Source importData(@XPathParam("//ODM") final Element odmElement) throws Exception {
+    public Source importData(@XPathParam("//*[local-name()='ODM' and (namespace-uri()='' or namespace-uri()='http://www.cdisc.org/ns/odm/v1.3')]"
+            + "[count(//*[local-name()='ODM'])=1]") final Element odmElement) throws Exception {
         return getTransactionTemplate().execute(new TransactionCallback<Source>() {
             public Source doInTransaction(TransactionStatus status) {
                 try {
