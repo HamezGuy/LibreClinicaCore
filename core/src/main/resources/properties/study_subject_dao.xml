@@ -1,14 +1,22 @@
 <?xml version="1.0"?>
 <queries>
+    <projection>
+        <name>study_subject</name>
+        <columns>
+            study_subject_id, label, secondary_label, subject_id, study_id, status_id,
+            enrollment_date, date_created, date_updated, owner_id, update_id, oc_oid,
+            time_zone
+        </columns>
+    </projection>
 	<query>
 		<name>findByPK</name>
-		<sql>SELECT ss.*,st.unique_identifier FROM study_subject ss, study st WHERE
+		<sql>SELECT @native(study_subject ss),st.unique_identifier FROM study_subject ss, study st WHERE
 		ss.study_subject_id = ? and ss.study_id = st.study_id</sql>
 	</query>
 	<query>
 		<name>findByPKAndStudy</name>
 		<sql>
-			SELECT ss.*
+			SELECT @native(study_subject ss)
 			FROM study_subject ss, study st
 			WHERE ss.study_subject_id = ?
 				AND ss.study_id=st.study_id
@@ -17,7 +25,7 @@
 	</query>
 	<query>
         <name>findByOidAndStudy</name>
-        <sql>SELECT SS.*
+        <sql>SELECT @native(study_subject ss)
             FROM STUDY_SUBJECT SS, study st
             WHERE SS.oc_oid = ?
                 AND SS.study_id = st.study_id
@@ -26,7 +34,7 @@
     </query>
     <query>
         <name>findByOid</name>
-        <sql>SELECT SS.*
+        <sql>SELECT @native(study_subject ss)
             FROM STUDY_SUBJECT SS
             WHERE SS.oc_oid = ?
         </sql>
@@ -144,13 +152,13 @@
 
 	<query>
 		<name>findAll</name>
-		<sql>SELECT * FROM study_subject</sql>
+		<sql>SELECT @native(study_subject) FROM study_subject</sql>
 	</query>
 
     <query>
 		<name>findAnotherBySameLabel</name>
 		<sql>
-			SELECT ss.*
+			SELECT @native(study_subject ss)
 			FROM study_subject ss, study st
 			WHERE ss.label=?
 				AND ss.study_id=st.study_id
@@ -163,7 +171,7 @@
     <query>
 		<name>findAnotherBySameLabelInSites</name>
 		<sql>
-			SELECT ss.*
+			SELECT @native(study_subject ss)
 			FROM study_subject ss, study st
 			WHERE ss.label=?
 				AND ss.study_id=st.study_id
@@ -176,7 +184,7 @@
 	<query>
 		<name>findByLabelAndStudy</name>
 		<sql>
-			SELECT ss.*
+			SELECT @native(study_subject ss)
 			FROM study_subject ss, study st
 			WHERE ss.label=?
 				AND ss.study_id=st.study_id
@@ -186,7 +194,7 @@
 	<query>
 		<name>findSameByLabelAndStudy</name>
 		<sql>
-			SELECT ss.*
+			SELECT @native(study_subject ss)
 			FROM study_subject ss, study st
 			WHERE ss.label=?
 				AND ss.study_id=st.study_id
@@ -197,7 +205,7 @@
 	<query>
 		<name>findAllByStudy</name>
 		<sql>
-			SELECT ss.*
+			SELECT @native(study_subject ss)
 			FROM study_subject ss, study st
 			WHERE ss.study_id = st.study_id
 				AND (st.study_id=? or st.parent_study_id=?)
@@ -207,7 +215,7 @@
     <query>
 		<name>findAllByStudySDV</name>
 		<sql>
-			SELECT mss.* FROM study_subject mss, study mst
+			SELECT @native(study_subject mss) FROM study_subject mss, study mst
             WHERE
             mss.study_id = mst.study_id AND
             (mst.study_id=? or mst.parent_study_id=?) 
@@ -227,7 +235,7 @@
 	<query>
 		<name>findAllByStudyId</name>
 		<sql>
-	        SELECT ss.*, s.unique_identifier, s.gender, stu.name
+	        SELECT @native(study_subject ss), s.unique_identifier, s.gender, stu.name
 	        FROM subject s, study_subject ss, study stu
 	        WHERE s.subject_id = ss.subject_id
 			    AND ss.study_id = stu.study_id
@@ -239,7 +247,7 @@
 	<query>
 		<name>findAllByStudyIdAndLimit</name>
 		<sql>
-	        SELECT ss.*, s.unique_identifier, s.gender, stu.name
+	        SELECT @native(study_subject ss), s.unique_identifier, s.gender, stu.name
 	        FROM subject s, study_subject ss, study stu
 	        WHERE s.subject_id = ss.subject_id
 			AND ss.study_id = stu.study_id
@@ -273,7 +281,7 @@
 		<name>findAllWithStudyEvent</name>
 		<sql>
 			SELECT DISTINCT
-				S.*
+				@native(study_subject s)
 			FROM
 				study_subject S
 				, study_event E
@@ -287,7 +295,7 @@
 	<query>
 		<name>findBySubjectIdAndStudy</name>
 		<sql>
-			SELECT ss.*, st.unique_identifier
+			SELECT @native(study_subject ss), st.unique_identifier
 			FROM study_subject ss, study st
 			WHERE ss.subject_id=?
 				AND ss.study_id=st.study_id
@@ -297,14 +305,14 @@
 	<query>
 		<name>findAllBySubjectId</name>
 		<sql>
-			SELECT *
+			SELECT @native(study_subject)
 			FROM study_subject WHERE subject_id=?
 		</sql>
 	</query>
 	<query>
 		<name>findAllByStudyOrderByLabel</name>
 		<sql>
-			SELECT ss.*
+			SELECT @native(study_subject ss)
 			FROM study_subject ss, study st
 			WHERE ss.study_id = st.study_id
 				AND (st.study_id=? or st.parent_study_id=?)
@@ -314,7 +322,7 @@
 	<query>
 		<name>findAllActiveByStudyOrderByLabel</name>
 		<sql>
-			SELECT ss.*
+			SELECT @native(study_subject ss)
 			FROM study_subject ss, study st
 			WHERE ss.study_id = st.study_id
 				AND (st.study_id=? or st.parent_study_id=?)

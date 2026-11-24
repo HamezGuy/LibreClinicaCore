@@ -1,13 +1,22 @@
 <?xml version="1.0"?>
 <queries>
+    <projection>
+        <name>event_crf</name>
+        <columns>
+            event_crf_id, study_event_id, crf_version_id, date_interviewed, interviewer_name, completion_status_id,
+            status_id, annotations, date_completed, validator_id, date_validate, date_validate_completed,
+            validator_annotations, validate_string, owner_id, date_created, study_subject_id, date_updated,
+            update_id, electronic_signature_status, sdv_status, old_status_id, sdv_update_id
+        </columns>
+    </projection>
     <query>
         <name>findByPK</name>
-        <sql>SELECT * FROM EVENT_CRF WHERE
+        <sql>SELECT @native(event_crf) FROM EVENT_CRF WHERE
             EVENT_CRF_ID = ?</sql>
     </query>
     <query>
         <name>findAll</name>
-        <sql>SELECT * FROM EVENT_CRF</sql>
+        <sql>SELECT @native(event_crf) FROM EVENT_CRF</sql>
     </query>
     <query>
         <name>delete</name>
@@ -48,7 +57,7 @@
 
     <query>
         <name>getEventCRFsByCRFStatus</name>
-        <sql>select ec.* from event_crf ec, study_event se, study_event_definition sed
+        <sql>select @native(event_crf ec) from event_crf ec, study_event se, study_event_definition sed
             where ec.study_event_id = se.study_event_id AND
             se.study_event_definition_id = sed.study_event_definition_id AND
             (se.subject_event_status_id = 4 or se.subject_event_status_id = 7) AND
@@ -60,7 +69,7 @@
 
     <query>
         <name>getEventCRFsByStudySDV</name>
-        <sql>select ec.* from event_crf ec, study_event se, study_event_definition sed
+        <sql>select @native(event_crf ec) from event_crf ec, study_event se, study_event_definition sed
             where ec.study_event_id = se.study_event_id AND
             se.study_event_definition_id = sed.study_event_definition_id AND
             (se.subject_event_status_id = 4 or se.subject_event_status_id = 7) AND
@@ -72,7 +81,7 @@
 
     <query>
         <name>getEventCRFsByStudy</name>
-        <sql>select ec.* from event_crf ec, study_event se, study_subject ss
+        <sql>select @native(event_crf ec) from event_crf ec, study_event se, study_subject ss
             where ec.study_event_id = se.study_event_id AND
             se.study_subject_id = ss.study_subject_id AND
             (se.subject_event_status_id = 4 or se.subject_event_status_id = 7) AND
@@ -103,7 +112,7 @@
 
     <query>
         <name>getEventCRFsByStudySubjectCompleteOrLocked</name>
-        <sql>select ec.* from event_crf ec
+        <sql>select @native(event_crf ec) from event_crf ec
              where
              (ec.status_id = 2 or ec.status_id = 6) AND
              ec.study_subject_id = ? </sql>
@@ -111,7 +120,7 @@
 
     <query>
         <name>getEventCRFsByStudySubjectLimit</name>
-        <sql>select ec.* from event_crf ec,  study_subject ss
+        <sql>select @native(event_crf ec) from event_crf ec,  study_subject ss
             where  ss.study_subject_id = ? AND
             ec.study_subject_id = ss.study_subject_id AND
             (ss.study_id = ? or ss.study_id in (select study_id from study where parent_study_id = ?)) limit ? offset ?</sql>
@@ -119,7 +128,7 @@
 
     <query>
         <name>getEventCRFsByStudySubjectLabelLimit</name>
-        <sql>select ec.* from event_crf ec,  study_subject ss,study_event se
+        <sql>select @native(event_crf ec) from event_crf ec,  study_subject ss,study_event se
             where ss.label like ? AND ec.study_subject_id = ss.study_subject_id AND
             ec.study_event_id = se.study_event_id AND
             (se.subject_event_status_id = 4 or se.subject_event_status_id = 7) AND
@@ -138,7 +147,7 @@
 
     <query>
         <name>getEventCRFsByStudySubject</name>
-        <sql>select ec.* from event_crf ec,  study_subject ss
+        <sql>select @native(event_crf ec) from event_crf ec,  study_subject ss
             where  ss.study_subject_id = ? AND
             ec.study_subject_id = ss.study_subject_id AND
             (ss.study_id = ?  or ss.study_id in (select study_id from study where parent_study_id = ?))</sql>
@@ -190,7 +199,7 @@
 
     <query>
         <name>getWithFilterAndSort</name>
-        <sql>select distinct ec.* from event_crf ec, study_event se, study_subject ss,study_event_definition sed,study s,
+        <sql>select distinct @native(event_crf ec) from event_crf ec, study_event se, study_subject ss,study_event_definition sed,study s,
             event_definition_crf edc, crf crf,crf_version cv
             where ec.study_event_id = se.study_event_id AND
             se.study_subject_id = ss.study_subject_id AND
@@ -225,7 +234,7 @@
 
     <query>
         <name>getEventCRFsBySDVRequirement</name>
-        <sql>select ec.* from event_crf ec, study_event se
+        <sql>select @native(event_crf ec) from event_crf ec, study_event se
             where
             ec.study_event_id = se.study_event_id AND
             (se.subject_event_status_id = 4 or se.subject_event_status_id = 7) AND
@@ -262,7 +271,7 @@
 
     <query>
         <name>getEventCRFsByStudyIdentifier</name>
-        <sql>select ec.* from event_crf ec, study_subject ss,study stud, study_event se
+        <sql>select @native(event_crf ec) from event_crf ec, study_subject ss,study stud, study_event se
             where ec.study_subject_id = ss.study_subject_id AND
             ss.study_id = stud.study_id AND
             (se.subject_event_status_id = 4 or se.subject_event_status_id = 7) AND
@@ -274,7 +283,7 @@
 
     <query>
         <name>getEventCRFsByEventNameLimit</name>
-        <sql>select ec.* from event_crf ec, study_event se, study_event_definition sed
+        <sql>select @native(event_crf ec) from event_crf ec, study_event se, study_event_definition sed
             where ec.study_event_id = se.study_event_id AND se.study_event_definition_id = sed.study_event_definition_id AND
             (se.subject_event_status_id = 4 or se.subject_event_status_id = 7) AND
             sed.name = ? limit ? offset ?</sql>
@@ -289,7 +298,7 @@
 
     <query>
         <name>getEventCRFsByEventDateLimit</name>
-        <sql>select ec.* from event_crf ec,study_event se,study_event_definition sed
+        <sql>select @native(event_crf ec) from event_crf ec,study_event se,study_event_definition sed
             where ec.study_event_id = se.study_event_id AND se.study_event_definition_id = sed.study_event_definition_id AND
             (se.subject_event_status_id = 4 or se.subject_event_status_id = 7) AND
             sed.study_id = ? AND ec.date_created = ? limit ? offset ?</sql>
@@ -332,26 +341,26 @@
     </query>
     <query>
         <name>findAllByStudyEvent</name>
-        <sql>SELECT * FROM event_crf WHERE study_event_id=? order by event_crf_id asc</sql>
+        <sql>SELECT @native(event_crf) FROM event_crf WHERE study_event_id=? order by event_crf_id asc</sql>
     </query>
     
     
     
     <query>
         <name>findAllByStudyEventAndStatus</name>
-        <sql>SELECT * FROM event_crf WHERE study_event_id=? and status_id = ? order by event_crf_id asc</sql>
+        <sql>SELECT @native(event_crf) FROM event_crf WHERE study_event_id=? and status_id = ? order by event_crf_id asc</sql>
     </query>
     
     <query>
         <name>findAllByStudyEventAndCrfOrCrfVersionOid</name>
-        <sql>SELECT * FROM event_crf WHERE study_event_id=? AND crf_version_id in
+        <sql>SELECT @native(event_crf) FROM event_crf WHERE study_event_id=? AND crf_version_id in
             ( select crf_version.crf_version_id from crf_version left outer join crf on crf.crf_id=crf_version.crf_id
             where
             crf_version.oc_oid=? or crf.oc_oid=?)</sql>
     </query>
     <query>
         <name>findByPKAndStudy</name>
-        <sql>SELECT EC.*
+        <sql>SELECT @native(event_crf ec)
             FROM event_crf EC, study_subject SS, study st
             WHERE EC.study_subject_id = SS.study_subject_id
             AND EC.event_crf_id = ?
@@ -365,7 +374,7 @@
     </query>
     <query>
         <name>findAllByCRF</name>
-        <sql>select ec.* from event_crf  ec, crf c ,crf_version cv
+        <sql>select @native(event_crf ec) from event_crf  ec, crf c ,crf_version cv
             where ec.crf_version_id=cv.crf_version_id
             and c.crf_id=cv.crf_id
             and c.crf_id=?
@@ -373,7 +382,7 @@
     </query>
     <query>
         <name>findAllByStudyEventInParticipantForm</name>
-        <sql>select ec.* from event_crf  ec, crf c ,crf_version cv
+        <sql>select @native(event_crf ec) from event_crf  ec, crf c ,crf_version cv
             where ec.crf_version_id=cv.crf_version_id
             and c.crf_id=cv.crf_id
             and study_event_id =? and c.crf_id in 
@@ -384,14 +393,14 @@
     </query>
     <query>
         <name>findAllByCRFVersion</name>
-        <sql>select ec.* from event_crf  ec, crf_version cv
+        <sql>select @native(event_crf ec) from event_crf  ec, crf_version cv
             where ec.crf_version_id=cv.crf_version_id
             and cv.crf_version_id=?
         </sql>
     </query>
     <query>
         <name>findAllStudySubjectByCRFVersion</name>
-        <sql>select ec.*, ss.label, sed.name as sed_name, s.name as study_name
+        <sql>select @native(event_crf ec), ss.label, sed.name as sed_name, s.name as study_name
             from study_subject ss, study_event_definition sed,
             study s, study_event se, event_crf  ec, crf_version cv
             where ec.crf_version_id=cv.crf_version_id
@@ -405,7 +414,7 @@
     </query>
     <query>
         <name>findUndeletedWithStudySubjectsByCRFVersion</name>
-        <sql>select ec.*, ss.label, sed.name as sed_name, s.name as study_name, se.sample_ordinal as repeat_number
+        <sql>select @native(event_crf ec), ss.label, sed.name as sed_name, s.name as study_name, se.sample_ordinal as repeat_number
             from study_subject ss, study_event_definition sed,
             study s, study_event se, event_crf  ec, crf_version cv
             where ec.crf_version_id=cv.crf_version_id
@@ -419,7 +428,7 @@
     </query>
     <query>
         <name>findByEventSubjectVersion</name>
-        <sql>select ec.* from event_crf  ec, crf_version cv
+        <sql>select @native(event_crf ec) from event_crf  ec, crf_version cv
             where ec.crf_version_id=cv.crf_version_id
             and ec.study_event_id=? and cv.crf_version_id=? and ec.study_subject_id=?
         </sql>
@@ -427,7 +436,7 @@
 
     <query>
         <name>findByEventCrfVersion</name>
-        <sql>select ec.* from event_crf  ec, crf_version cv
+        <sql>select @native(event_crf ec) from event_crf  ec, crf_version cv
             where ec.crf_version_id=cv.crf_version_id
             and ec.study_event_id=? and cv.crf_version_id=?
         </sql>
@@ -435,7 +444,7 @@
 
     <query>
         <name>findByCrfVersion</name>
-        <sql>select ec.* from event_crf  ec, crf_version cv
+        <sql>select @native(event_crf ec) from event_crf  ec, crf_version cv
             where ec.crf_version_id=cv.crf_version_id
             and cv.crf_version_id=?
         </sql>
@@ -460,7 +469,7 @@
     <query>
         <name>findByPKAndStudy</name>
         <sql>
-            SELECT E.*
+            SELECT @native(event_crf e)
             FROM event_crf E, study_subject S, study st
             WHERE
             E.study_subject_id = S.study_subject_id
@@ -478,7 +487,7 @@
     <query>
         <name>findAllByStudySubject</name>
         <sql>
-            SELECT * FROM event_crf WHERE study_event_id in (SELECT se.study_event_id FROM study_event se, study_event_definition sed
+            SELECT @native(event_crf) FROM event_crf WHERE study_event_id in (SELECT se.study_event_id FROM study_event se, study_event_definition sed
             WHERE se.study_subject_id=?
             and se.study_event_definition_id= sed.study_event_definition_id) order by event_crf_id asc
         </sql>
@@ -486,7 +495,7 @@
     <query>
         <name>buildEventCrfListByStudyEvent</name>
         <sql>
-            select * from event_crf where study_subject_id = ?
+            select @native(event_crf) from event_crf where study_subject_id = ?
         </sql>
     </query>
     <query>
@@ -507,7 +516,7 @@
 	<query>
 		<name>findAllCRFMigrationReportList</name>
 		<sql>
-			select ec.* from event_crf ec
+			select @native(event_crf ec) from event_crf ec
 			JOIN study_subject ss on ss.study_subject_id = ec.study_subject_id
 			JOIN study_event se on se.study_event_id = ec.study_event_id
 			JOIN crf_version cv on cv.crf_version_id = ec.crf_version_id

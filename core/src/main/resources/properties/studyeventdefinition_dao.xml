@@ -1,18 +1,26 @@
 <?xml version="1.0"?>
 <queries>
+    <projection>
+        <name>study_event_definition</name>
+        <columns>
+            study_event_definition_id, study_id, name, description, repeating, type,
+            category, owner_id, status_id, date_created, date_updated, update_id,
+            ordinal, oc_oid
+        </columns>
+    </projection>
 	<query>
 		<name>findByPK</name>
-		<sql>SELECT * FROM STUDY_EVENT_DEFINITION WHERE
+		<sql>SELECT @native(study_event_definition) FROM STUDY_EVENT_DEFINITION WHERE
 		STUDY_EVENT_DEFINITION_ID = ?</sql>
 	</query>
 	<query>
 		<name>findByName</name>
-		<sql>SELECT * FROM STUDY_EVENT_DEFINITION WHERE
+		<sql>SELECT @native(study_event_definition) FROM STUDY_EVENT_DEFINITION WHERE
 		NAME = ?</sql>
 	</query>
 	<query>
 		<name>findByPKAndStudy</name>
-		<sql>SELECT SED.*
+		<sql>SELECT @native(study_event_definition sed)
 			FROM STUDY_EVENT_DEFINITION SED, study st
 			WHERE SED.study_event_definition_id = ?
 				AND SED.study_id = st.study_id
@@ -21,7 +29,7 @@
 	</query>
 	<query>
         <name>findByOidAndStudy</name>
-        <sql>SELECT SED.*
+        <sql>SELECT @native(study_event_definition sed)
             FROM STUDY_EVENT_DEFINITION SED, study st
             WHERE SED.oc_oid = ?
                 AND SED.study_id = st.study_id
@@ -30,19 +38,19 @@
     </query>
     <query>
         <name>findByOid</name>
-        <sql>SELECT SED.*
+        <sql>SELECT @native(study_event_definition sed)
             FROM STUDY_EVENT_DEFINITION SED
             WHERE SED.oc_oid = ?
         </sql>
     </query>
 	<query>
 		<name>findAll</name>
-		<sql>SELECT * FROM STUDY_EVENT_DEFINITION</sql>
+		<sql>SELECT @native(study_event_definition) FROM STUDY_EVENT_DEFINITION</sql>
 	</query>
 	<query>
 		<name>findAllByStudy</name>
 		<sql>
-			SELECT sed.*
+			SELECT @native(study_event_definition sed)
 			FROM STUDY_EVENT_DEFINITION sed, study st
 			WHERE sed.study_id = st.study_id
 				AND (st.study_id=? or st.parent_study_id=?)
@@ -52,7 +60,7 @@
 	<query>
 		<name>findAllActiveByStudy</name>
 		<sql>
-			SELECT sed.*
+			SELECT @native(study_event_definition sed)
 			FROM STUDY_EVENT_DEFINITION sed, study st
 			WHERE sed.study_id = st.study_id
 				AND (st.study_id=? or st.parent_study_id=?)
@@ -63,7 +71,7 @@
 	<query>
 		<name>findAllByStudyAndLimit</name>
 		<sql>
-			SELECT sed.*
+			SELECT @native(study_event_definition sed)
 			FROM STUDY_EVENT_DEFINITION sed, study st
 			WHERE sed.study_id = st.study_id
 			AND (st.study_id=? or st.parent_study_id=?)
@@ -91,7 +99,7 @@
 		<name>findAllWithStudyEvent</name>
 		<sql>
 			SELECT DISTINCT
-				D.*
+				@native(study_event_definition d)
 			FROM
 				STUDY_EVENT_DEFINITION D
 				, STUDY_EVENT E
@@ -113,7 +121,7 @@
 	<query>
 		<name>findByEventDefinitionCRFId</name>
 		<sql>
-			SELECT D.*
+			SELECT @native(study_event_definition d)
 			FROM STUDY_EVENT_DEFINITION D, EVENT_DEFINITION_CRF E
 			WHERE
 				D.study_event_definition_id = E.study_event_definition_id
@@ -123,7 +131,7 @@
 	<query>
 		<name>findAllActiveByParentStudyId</name>
 		<sql>
-			SELECT sed.*
+			SELECT @native(study_event_definition sed)
 			FROM STUDY_EVENT_DEFINITION sed, study st
 			WHERE sed.study_id = st.study_id
 				AND (st.study_id=?)
@@ -134,7 +142,7 @@
     <query>
         <name>findByStudySubject</name>
         <sql>
-            select * from study_event_definition where study_event_definition_id in (
+            select @native(study_event_definition) from study_event_definition where study_event_definition_id in (
             select distinct study_event_definition_id from study_event where study_subject_id = ?)
         </sql>
     </query>

@@ -1,35 +1,43 @@
 <?xml version="1.0"?>
 <queries>
+    <projection>
+        <name>crf_version</name>
+        <columns>
+            crf_version_id, crf_id, name, description, revision_notes, status_id,
+            date_created, date_updated, owner_id, update_id, oc_oid, xform,
+            xform_name
+        </columns>
+    </projection>
 	<query>
 		<name>findByPK</name>
-		<sql>SELECT * FROM CRF_VERSION WHERE 
+		<sql>SELECT @native(crf_version) FROM CRF_VERSION WHERE
 		CRF_VERSION_ID = ?</sql>
 	</query>
 	<query>
         <name>findByOID</name>
-        <sql>SELECT * FROM CRF_VERSION WHERE 
+        <sql>SELECT @native(crf_version) FROM CRF_VERSION WHERE
         OC_OID = ?</sql>
     </query>
 	<query>
 		<name>findByFullName</name>
-		<sql>SELECT cv.* FROM CRF_VERSION cv, CRF c WHERE 
+		<sql>SELECT @native(crf_version cv) FROM CRF_VERSION cv, CRF c WHERE
 		cv.CRF_ID = c.CRF_ID AND cv.NAME = ? AND c.NAME = ?</sql>
 	</query>
 	<query>
 		<name>findAll</name>
-		<sql>SELECT * FROM CRF_VERSION order by DATE_CREATED desc</sql>
+		<sql>SELECT @native(crf_version) FROM CRF_VERSION order by DATE_CREATED desc</sql>
 	</query>
 	<query>
         <name>findAllByOid</name>
-        <sql>SELECT * FROM CRF_VERSION where oc_oid=?</sql>
+        <sql>SELECT @native(crf_version) FROM CRF_VERSION where oc_oid=?</sql>
     </query>
 	<query>
 		<name>findAllByCRF</name>
-		<sql>SELECT * FROM CRF_VERSION WHERE crf_id =? order by DATE_CREATED desc </sql>
+		<sql>SELECT @native(crf_version) FROM CRF_VERSION WHERE crf_id =? order by DATE_CREATED desc </sql>
 	</query>
 	<query>
 		<name>findAllActiveByCRF</name>
-		<sql>SELECT * FROM CRF_VERSION WHERE crf_id =? and status_id =1 order by DATE_CREATED desc </sql>
+		<sql>SELECT @native(crf_version) FROM CRF_VERSION WHERE crf_id =? and status_id =1 order by DATE_CREATED desc </sql>
 	</query>
 	<query>
 		<name>create</name>
@@ -78,7 +86,7 @@
     <query>
      <name>findDefCRFVersionsByStudyEvent</name>
      <sql>
-      SELECT cv.* FROM study_event_definition sed,event_definition_crf edc, crf_version cv
+      SELECT @native(crf_version cv) FROM study_event_definition sed,event_definition_crf edc, crf_version cv
       WHERE sed.study_event_definition_id = edc.study_event_definition_id
        AND edc.default_version_id = cv.crf_version_id AND edc.participant_form = true
        AND sed.study_event_definition_id = ?
@@ -143,7 +151,7 @@
 	</query>
 	<query>
 		<name>findAllByCRFId</name>
-		<sql>SELECT * FROM crf_version WHERE crf_id=?</sql>
+		<sql>SELECT @native(crf_version) FROM crf_version WHERE crf_id=?</sql>
 	</query>
 	<!--ADDED by tbh, 1-8-05, shouldn't we have our own xml file for item_form_metadata? -->
 	<query>
@@ -158,7 +166,7 @@
 	</query>
     <query>
         <name>buildCrfVersionById</name>
-        <sql>select * from crf_version where crf_version_id in (
+        <sql>select @native(crf_version) from crf_version where crf_version_id in (
         select distinct crf_version_id from event_crf where study_subject_id = ?)</sql>
     </query>
 	

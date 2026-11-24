@@ -1,8 +1,15 @@
 <?xml version="1.0"?>
 <queries>
+    <projection>
+        <name>crf</name>
+        <columns>
+            crf_id, status_id, name, description, owner_id, date_created,
+            date_updated, update_id, oc_oid, source_study_id
+        </columns>
+    </projection>
 	<query>
 		<name>findByPK</name>
-		<sql>SELECT * FROM CRF WHERE
+		<sql>SELECT @native(crf) FROM CRF WHERE
 		CRF_ID = ?</sql>
 	</query>
 	<query>
@@ -17,36 +24,36 @@
     </query>
 	<query>
         <name>findByOID</name>
-        <sql>SELECT * FROM CRF WHERE
+        <sql>SELECT @native(crf) FROM CRF WHERE
         OC_OID = ?</sql>
     </query>
 	<query>
 		<name>findByName</name>
-		<sql>SELECT * FROM CRF WHERE
+		<sql>SELECT @native(crf) FROM CRF WHERE
 		name = ?</sql>
 	</query>
     <query>
 		<name>findAnotherByName</name>
 		<sql>
-        SELECT * FROM CRF WHERE
+        SELECT @native(crf) FROM CRF WHERE
 		name = ? and crf_id !=?
         </sql>
 	</query>
 	<query>
 		<name>findAll</name>
-		<sql>SELECT * FROM CRF</sql>
+		<sql>SELECT @native(crf) FROM CRF</sql>
 	</query>
 	<query>
 		<name>findAllByStudy</name>
-		<sql>SELECT * FROM CRF WHERE source_study_id=?</sql>
+		<sql>SELECT @native(crf) FROM CRF WHERE source_study_id=?</sql>
 	</query>
 	<query>
 		<name>findAllByStatus</name>
-		<sql>SELECT * FROM CRF where status_id=?</sql>
+		<sql>SELECT @native(crf) FROM CRF where status_id=?</sql>
 	</query>
 	<query>
 		<name>findAllByLimit</name>
-		<sql>SELECT * FROM CRF limit 5</sql>
+		<sql>SELECT @native(crf) FROM CRF limit 5</sql>
 	</query>
 	<query>
 		<name>create</name>
@@ -105,7 +112,7 @@
 	<query>
 		<name>findByVersionId</name>
 		<sql>
-			SELECT DISTINCT c.*
+			SELECT DISTINCT @native(crf c)
 			FROM crf c, crf_version v
 			WHERE c.crf_id=v.crf_id AND v.crf_version_id=?
 		</sql>
@@ -113,14 +120,14 @@
 	<query>
 		<name>findAllByStudyId</name>
 		<sql>
-			SELECT DISTINCT c.*
+			SELECT DISTINCT @native(crf c)
 			FROM crf c, crf_version v
 			WHERE c.crf_id=v.crf_id AND v.crf_version_id=?
 		</sql>
 	</query>
     <query>
       <name>findAllActiveByDefinition</name>
-      <sql>select distinct c.* from crf c,event_definition_crf edc
+      <sql>select distinct @native(crf c) from crf c,event_definition_crf edc
          where edc.study_event_definition_id=?
          and c.crf_id=edc.crf_id
          and c.status_id=1
@@ -129,7 +136,7 @@
     </query>
     <query>
       <name>findAllActiveByDefinitions</name>
-      <sql>select distinct c.* from crf c,event_definition_crf edc
+      <sql>select distinct @native(crf c) from crf c,event_definition_crf edc
          where edc.study_id=?
          and c.crf_id=edc.crf_id
          and c.status_id=1
@@ -144,7 +151,7 @@
     <query>
       <name>buildCrfById</name>
       <sql>
-      select * from crf where crf_id in (select crf_id from event_definition_crf where study_event_definition_id in (
+      select @native(crf) from crf where crf_id in (select crf_id from event_definition_crf where study_event_definition_id in (
       select study_event_definition_id from study_event_definition where study_event_definition_id in (
       select distinct study_event_definition_id from study_event where study_subject_id = ?)))
       </sql>
