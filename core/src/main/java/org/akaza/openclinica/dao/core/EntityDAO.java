@@ -545,6 +545,11 @@ public abstract class EntityDAO<B> implements DAOInterface<B> {
         return al;
     }
     
+    /** Most legacy beans require a primitive default. DAOs with a nullable integer contract may preserve SQL NULL. */
+    protected Integer nullIntegerValue(String column) {
+        return 0;
+    }
+
     public HashMap<String, Object> processCurrentRow(ResultSet rs) throws SQLException {
         HashMap<String, Object> cellValues = new HashMap<>();
         ResultSetMetaData rsmd = rs.getMetaData();
@@ -591,7 +596,7 @@ public abstract class EntityDAO<B> implements DAOInterface<B> {
                     case TypeNames.INT:
                         cellValues.put(column, rs.getInt(columnIndex));
                         if (rs.wasNull()) {
-                            cellValues.put(column, 0);
+                            cellValues.put(column, nullIntegerValue(column));
                         }
                         break;
                     case TypeNames.LONG:

@@ -33,7 +33,7 @@ public class ItemDataBean extends AuditableEntityBean {
         result = prime * result + (auditLog ? 1231 : 1237);
         result = prime * result + eventCRFId;
         result = prime * result + itemId;
-        result = prime * result + ordinal;
+        result = prime * result + java.util.Objects.hashCode(ordinal);
         result = prime * result + (deleted ? 1231 : 1237);
         result = prime * result + (selected ? 1231 : 1237);
         result = prime * result + ((value == null) ? 0 : value.hashCode());
@@ -55,7 +55,7 @@ public class ItemDataBean extends AuditableEntityBean {
             return false;
         if (itemId != other.itemId)
             return false;
-        if (ordinal != other.ordinal)
+        if (!java.util.Objects.equals(ordinal, other.ordinal))
             return false;
         if (deleted != other.deleted)
             return false;
@@ -74,7 +74,7 @@ public class ItemDataBean extends AuditableEntityBean {
     private ItemBean item;
     private String value;// name will be null
     
-    private int ordinal;// for repeating items
+    private Integer ordinal;// for repeating items
     
     private boolean deleted;
 
@@ -156,7 +156,19 @@ public class ItemDataBean extends AuditableEntityBean {
      * @return the ordinal
      */
     public int getOrdinal() {
+        if (ordinal == null) {
+            throw new IllegalStateException("The stored item has no known repeat ordinal");
+        }
         return ordinal;
+    }
+
+    /** The stored row coordinate, including SQL NULL on historical observations. */
+    public Integer getStoredOrdinal() {
+        return ordinal;
+    }
+
+    public void setStoredOrdinal(Integer ordinal) {
+        this.ordinal = ordinal;
     }
 
     /**

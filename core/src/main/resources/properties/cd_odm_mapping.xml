@@ -140,5 +140,17 @@
                type="java.lang.String">
             <bind-xml name="IsNull" node="attribute"/>
        </field>
+       <field name="ReasonForNull" type="java.lang.String">
+            <bind-xml name="ReasonForNull" ns-uri="http://www.openclinica.org/ns/odm_ext_v130/v3.1" node="attribute"/>
+       </field>
+       <field name="MeasurementUnitRef" type="org.akaza.openclinica.bean.odmbeans.ElementRefBean">
+            <bind-xml name="MeasurementUnitRef" node="element"/>
+       </field>
+    </class>
+    <class name="org.akaza.openclinica.bean.odmbeans.ElementRefBean">
+       <map-to xml="MeasurementUnitRef"/>
+       <field name="ElementDefOID" type="java.lang.String">
+            <bind-xml name="MeasurementUnitOID" node="attribute"/>
+       </field>
     </class>
 </mapping>

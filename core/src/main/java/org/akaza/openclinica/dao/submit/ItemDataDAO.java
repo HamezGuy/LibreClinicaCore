@@ -17,6 +17,7 @@ import java.util.Locale;
 
 import javax.sql.DataSource;
 
+import org.akaza.openclinica.bean.core.NullValue;
 import org.akaza.openclinica.bean.core.ApplicationConstants;
 import org.akaza.openclinica.bean.core.EntityBean;
 import org.akaza.openclinica.bean.core.ItemDataType;
@@ -118,6 +119,18 @@ public class ItemDataDAO extends AuditableEntityDAO<ItemDataBean> {
     }
 
     @Override
+    protected Integer nullIntegerValue(String column) {
+        return "ordinal".equals(column) ? null : super.nullIntegerValue(column);
+    }
+
+    private void writeWithOrdinal(String query, HashMap<Integer, Object> variables, int ordinalPosition, ItemDataBean item) {
+        variables.put(ordinalPosition, item.getStoredOrdinal());
+        HashMap<Integer, Integer> nullTypes = new HashMap<>();
+        nullTypes.put(ordinalPosition, java.sql.Types.INTEGER);
+        executeUpdate(digester.getQuery(query), variables, nullTypes);
+    }
+
+    @Override
     public void setTypesExpected() {
         this.unsetTypeExpected();
         this.setTypeExpected(1, TypeNames.INT);
@@ -139,7 +152,7 @@ public class ItemDataDAO extends AuditableEntityDAO<ItemDataBean> {
         // YW 12-06-2007 << convert to oc_date_format_string pattern before
         // inserting into database
         ItemDataType dataType = getDataType(idb.getItemId());
-        if (dataType.equals(ItemDataType.DATE)) {
+        if (NullValue.getByName(idb.getValue()) == NullValue.INVALID && dataType.equals(ItemDataType.DATE)) {
             idb.setValue(Utils.convertedItemDateValue(idb.getValue(), local_df_string, oc_df_string, locale));
         } else if (dataType.equals(ItemDataType.PDATE)) {
             idb.setValue(formatPDate(idb.getValue()));
@@ -152,11 +165,10 @@ public class ItemDataDAO extends AuditableEntityDAO<ItemDataBean> {
         variables.put(new Integer(3), new Integer(idb.getStatus().getId()));
         variables.put(new Integer(4), idb.getValue());
         variables.put(new Integer(5), new Integer(idb.getUpdaterId()));
-        variables.put(new Integer(6), new Integer(idb.getOrdinal()));
         variables.put(new Integer(7), new Integer(idb.getOldStatus().getId()));
         variables.put(new Integer(8), new Boolean(idb.isDeleted()));
         variables.put(new Integer(9), new Integer(idb.getId()));
-        this.executeUpdate(digester.getQuery("update"), variables);
+        writeWithOrdinal("update", variables, 6, idb);
 
         if (isQuerySuccessful()) {
             idb.setActive(true);
@@ -177,7 +189,7 @@ public class ItemDataDAO extends AuditableEntityDAO<ItemDataBean> {
         // YW 12-06-2007 << convert to oc_date_format_string pattern before
         // inserting into database
         ItemDataType dataType = getDataType(idb.getItemId());
-        if (dataType.equals(ItemDataType.DATE)) {
+        if (NullValue.getByName(idb.getValue()) == NullValue.INVALID && dataType.equals(ItemDataType.DATE)) {
             idb.setValue(Utils.convertedItemDateValue(idb.getValue(), local_df_string, oc_df_string, locale));
         } else if (dataType.equals(ItemDataType.PDATE)) {
             idb.setValue(formatPDate(idb.getValue()));
@@ -204,7 +216,7 @@ public class ItemDataDAO extends AuditableEntityDAO<ItemDataBean> {
         // YW 12-06-2007 << convert to oc_date_format_string pattern before
         // inserting into database
         ItemDataType dataType = getDataType(idb.getItemId());
-        if (dataType.equals(ItemDataType.DATE)) {
+        if (NullValue.getByName(idb.getValue()) == NullValue.INVALID && dataType.equals(ItemDataType.DATE)) {
             idb.setValue(Utils.convertedItemDateValue(idb.getValue(), local_df_string, oc_df_string, locale));
         } else if (dataType.equals(ItemDataType.PDATE)) {
             idb.setValue(formatPDate(idb.getValue()));
@@ -247,7 +259,7 @@ public class ItemDataDAO extends AuditableEntityDAO<ItemDataBean> {
      * current_df_string= yyyy-MM-dd oc_df_string = yyyy-mm-dd local_df_string = dd-MMM-yyyy
      */
     public ItemDataBean setItemDataBeanIfDateOrPdate(ItemDataBean idb, String current_df_string, ItemDataType dataType) {
-        if (dataType.equals(ItemDataType.DATE)) {
+        if (NullValue.getByName(idb.getValue()) == NullValue.INVALID && dataType.equals(ItemDataType.DATE)) {
             idb.setValue(Utils.convertedItemDateValue(idb.getValue(), current_df_string, oc_df_string, locale));
         } else if (dataType.equals(ItemDataType.PDATE)) {
             idb.setValue(formatPDate(idb.getValue()));
@@ -305,7 +317,7 @@ public class ItemDataDAO extends AuditableEntityDAO<ItemDataBean> {
         // YW 12-06-2007 << convert to oc_date_format_string pattern before
         // inserting into database
         ItemDataType dataType = getDataType(idb.getItemId());
-        if (dataType.equals(ItemDataType.DATE)) {
+        if (NullValue.getByName(idb.getValue()) == NullValue.INVALID && dataType.equals(ItemDataType.DATE)) {
             idb.setValue(Utils.convertedItemDateValue(idb.getValue(), local_df_string, oc_df_string, locale));
         } else if (dataType.equals(ItemDataType.PDATE)) {
             idb.setValue(formatPDate(idb.getValue()));
@@ -319,10 +331,9 @@ public class ItemDataDAO extends AuditableEntityDAO<ItemDataBean> {
         variables.put(new Integer(4), new Integer(idb.getStatus().getId()));
         variables.put(new Integer(5), idb.getValue());
         variables.put(new Integer(6), new Integer(idb.getOwnerId()));
-        variables.put(new Integer(7), new Integer(idb.getOrdinal()));
         variables.put(new Integer(8), new Integer(idb.getStatus().getId()));
         variables.put(new Integer(9), new Boolean(idb.isDeleted()));
-        this.executeUpdate(digester.getQuery("create"), variables);
+        writeWithOrdinal("create", variables, 7, idb);
 
         if (isQuerySuccessful()) {
             idb.setId(id);
@@ -336,7 +347,7 @@ public class ItemDataDAO extends AuditableEntityDAO<ItemDataBean> {
         // YW 12-06-2007 << convert to oc_date_format_string pattern before
         // inserting into database
         ItemDataType dataType = getDataType(idb.getItemId());
-        if (dataType.equals(ItemDataType.DATE)) {
+        if (NullValue.getByName(idb.getValue()) == NullValue.INVALID && dataType.equals(ItemDataType.DATE)) {
             idb.setValue(Utils.convertedItemDateValue(idb.getValue(), local_df_string, oc_df_string, locale));
         } else if (dataType.equals(ItemDataType.PDATE)) {
             idb.setValue(formatPDate(idb.getValue()));
@@ -350,10 +361,9 @@ public class ItemDataDAO extends AuditableEntityDAO<ItemDataBean> {
         variables.put(new Integer(4), new Integer(idb.getStatus().getId()));
         variables.put(new Integer(5), idb.getValue());
         variables.put(new Integer(6), new Integer(idb.getOwnerId()));
-        variables.put(new Integer(7), new Integer(idb.getOrdinal()));
         variables.put(new Integer(8), new Integer(idb.getUpdaterId()));
         variables.put(new Integer(9), new Boolean(idb.isDeleted()));
-        this.executeUpdate(digester.getQuery("upsert"), variables);
+        writeWithOrdinal("upsert", variables, 7, idb);
 
         if (isQuerySuccessful()) {
             idb.setId(id);
@@ -382,6 +392,7 @@ public class ItemDataDAO extends AuditableEntityDAO<ItemDataBean> {
     // }
 
     public String formatPDate(String pDate) {
+        if (NullValue.getByName(pDate) != NullValue.INVALID) return pDate;
         String temp = "";
         if (pDate != null && pDate.length() > 0) {
             String yearMonthFormat = I18nFormatUtil.yearMonthFormatString(this.locale);
@@ -404,6 +415,7 @@ public class ItemDataDAO extends AuditableEntityDAO<ItemDataBean> {
     }
 
     public String reFormatPDate(String pDate) {
+        if (NullValue.getByName(pDate) != NullValue.INVALID) return pDate;
         String temp = "";
         if (pDate != null && pDate.length() > 0) {
             String yearMonthFormat = I18nFormatUtil.yearMonthFormatString(this.locale);
@@ -437,14 +449,14 @@ public class ItemDataDAO extends AuditableEntityDAO<ItemDataBean> {
         // fetching out from database
         if (formatDates) {
             ItemDataType dataType = getDataType(eb.getItemId());
-            if (dataType.equals(ItemDataType.DATE)) {
+            if (NullValue.getByName(eb.getValue()) == NullValue.INVALID && dataType.equals(ItemDataType.DATE)) {
                 eb.setValue(Utils.convertedItemDateValue(eb.getValue(), oc_df_string, local_df_string, locale));
             } else if (dataType.equals(ItemDataType.PDATE)) {
                 eb.setValue(reFormatPDate(eb.getValue()));
             }
         }
         eb.setStatus(Status.get(((Integer) hm.get("status_id")).intValue()));
-        eb.setOrdinal(((Integer) hm.get("ordinal")).intValue());
+        eb.setStoredOrdinal((Integer) hm.get("ordinal"));
         eb.setDeleted(((Boolean) hm.get("deleted")).booleanValue());
         eb.setOldStatus(Status.get(hm.get("old_status_id") == null ? 1 : ((Integer) hm.get("old_status_id")).intValue()));
         return eb;

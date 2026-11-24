@@ -48,6 +48,7 @@ import org.akaza.openclinica.bean.submit.ItemGroupBean;
 import org.akaza.openclinica.bean.submit.ResponseOptionBean;
 import org.akaza.openclinica.bean.submit.crfdata.FormDataBean;
 import org.akaza.openclinica.bean.submit.crfdata.ImportItemDataBean;
+import org.akaza.openclinica.logic.importdata.OdmItemImportValue;
 import org.akaza.openclinica.bean.submit.crfdata.ImportItemGroupDataBean;
 import org.akaza.openclinica.bean.submit.crfdata.ODMContainer;
 import org.akaza.openclinica.bean.submit.crfdata.StudyEventDataBean;
@@ -420,7 +421,9 @@ public class ImportCRFDataService {
                                                 logger.debug("found npe for group ordinals, line 344!");
                                             }
                                         }
-                                        ItemDataBean itemDataBean = createItemDataBean(itemBean, eventCRFBean, importItemDataBean.getValue(), ub, groupOrdinal);
+                                        String nativeValue = OdmItemImportValue.resolve(importItemDataBean, itemBean.getId(),
+                                                eventDefinitionCRF == null ? null : eventDefinitionCRF.getNullValues(), ds);
+                                        ItemDataBean itemDataBean = createItemDataBean(itemBean, eventCRFBean, nativeValue, ub, groupOrdinal);
                                         blankCheckItems.add(itemBean);
                                         String newKey = groupOrdinal + "_" + itemGroupDataBean.getItemGroupOID() + "_" + itemBean.getOid() + "_"
                                                 + subjectDataBean.getSubjectOID();
@@ -435,8 +438,10 @@ public class ImportCRFDataService {
                                             String eventCRFRepeatKey = studyEventDataBean.getStudyEventRepeatKey();
                                             // if you do indeed leave off this in the XML it will pass but return 'null'
                                             // tbh
-                                            attachValidator(displayItemBean, importHelper, discValidator, hardValidator, request, eventCRFRepeatKey,
-                                                    studySubjectBean.getOid());
+                                            if (!"Yes".equals(importItemDataBean.getIsNull())) {
+                                                attachValidator(displayItemBean, importHelper, discValidator, hardValidator, request, eventCRFRepeatKey,
+                                                        studySubjectBean.getOid());
+                                            }
                                             displayItemBeans.add(displayItemBean);
 
                                         } else {
